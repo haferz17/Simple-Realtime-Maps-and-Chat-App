@@ -112,17 +112,19 @@ export default class HomeScreen extends Component {
                         />
                     ))}
                 </MapView>
-                <TouchableOpacity style={{position:'absolute',top:40,left:20,elevation:10,backgroundColor:'#fff',borderRadius:30,width:50,height:50}} onPress={()=>this.props.navigation.navigate('Profile')}>
-                    <Image style={{width:50,height:50,marginRight:15,borderRadius:30}} source={require('../assets/user.png')}/>
+                {/* <TouchableOpacity 
+                    style={{position:'absolute',top:40,left:20,elevation:10,backgroundColor:'#fff',borderRadius:30,width:50,height:50}} 
+                    onPress={()=>this.props.navigation.navigate('Profile')}>
+                    <Image style={{width:50,height:50,marginRight:15,borderRadius:30}} source={{uri:User.avatar}}/>
                 </TouchableOpacity>
                 <TouchableOpacity style={{position:'absolute',top:40,right:20,elevation:10,backgroundColor:'#fff',borderRadius:30,width:45,height:45,justifyContent:'center'}} onPress={()=>this.props.navigation.navigate('Chat')}>
                     <Image style={{width:40,height:40,marginRight:15}} source={require('../assets/chat.png')}/>
                 </TouchableOpacity>
-                <View style={{position:'absolute',bottom:0}}>
-                    <Carousel/>
+                <View style={{position:'absolute',bottom:0}}> */}
+                    <Carousel navigation={this.props.navigation}/>
                 </View>
                 
-            </View>
+            // </View>
         )
     }
 }

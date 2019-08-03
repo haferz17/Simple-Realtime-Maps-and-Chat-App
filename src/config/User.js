@@ -1,7 +1,8 @@
 const User = {
+    uid: null,
     name: null,
     email: null,
-    uid: null,
+    status: "Offline",
     mobile: null,
     avatar: null,
     location : {

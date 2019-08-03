@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import { View, Text, TouchableOpacity, TextInput, SafeAreaView, FlatList, Dimensions, Image} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, FlatList, Dimensions, Image} from 'react-native';
 
 import firebase from 'firebase';
 import User from '../config/User'; 
+import moment from 'moment';
 const { width,height } = Dimensions.get('window');
 
 export default class ChatRoom extends Component {
@@ -66,37 +67,38 @@ export default class ChatRoom extends Component {
                 borderTopRightRadius: item.from===User.uid ? 0 : 15
             }}>
                 <Text style={{color: item.from===User.uid ? '#fff':'#333',marginBottom:5}}>{item.message}</Text>
-                <Text style={{color: item.from===User.uid ? '#fff':'#333'}}>{item.time}</Text>
+                <Text style={{color: item.from===User.uid ? '#fff':'#333',alignSelf:'flex-end',fontSize:12}}>{moment(item.time).format("hh:mm A")}</Text>
             </View>
             // </View>
         )
     }
 	render() {
         let {height,width} = Dimensions.get('window')
-        console.log(this.state.messageList)
 		return (
             <View style={{flex:1,backgroundColor:'#03a9f4'}}>
                 <View style={{flex:1}}>
                     
                 </View>
                 <View style={{flex:14,backgroundColor:'#fff',borderTopLeftRadius:25,borderTopRightRadius:25,paddingTop:10}}>
-                <Text style={{alignSelf:'center'}}>Active</Text>
-                <FlatList
-                    style={{padding:10,height:height*0.8}}
-                    data={this.state.messageList}
-                    renderItem={this.renderRow}
-                    keyExtractor={(item,index)=>index.toString()}
-                />
-                <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',width}}>
-                    <TextInput 
-                        style={{borderWidth:1,width:width*0.75,paddingHorizontal:15,borderRadius:20,borderColor:'#333'}}
-                        value={this.state.textMessage}
-                        onChangeText={this.handleChange('textMessage')}
+                    <Text style={{alignSelf:'center'}}>{User.status}</Text>
+                    <FlatList
+                        style={{padding:10,height:height*0.8}}
+                        data={this.state.messageList}
+                        renderItem={this.renderRow}
+                        keyExtractor={(item,index)=>index.toString()}
+                        ref = "flatList"
+                        onContentSizeChange={()=> this.refs.flatList.scrollToEnd()}
                     />
-                    <TouchableOpacity onPress={this.sendMessage}>
-                        <Text>Send</Text>
-                    </TouchableOpacity>
-                </View>
+                    <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',width}}>
+                        <TextInput 
+                            style={{borderWidth:1,width:width*0.75,paddingHorizontal:15,borderRadius:20,borderColor:'#999',marginBottom:5}}
+                            value={this.state.textMessage}
+                            onChangeText={this.handleChange('textMessage')}
+                        />
+                        <TouchableOpacity onPress={this.sendMessage}>
+                            <Image style={{height:40,width:40,marginLeft:10}} source={require('../assets/send.png')}/>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
 		)

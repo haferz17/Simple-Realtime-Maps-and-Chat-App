@@ -7,10 +7,10 @@ import {
     StyleSheet,
     Dimensions,
     TouchableOpacity,
-    CheckBox,
-    ScrollView
+    ActivityIndicator,
 } from 'react-native';
-import DateTimePicker from "react-native-modal-datetime-picker";
+import { Toast } from 'native-base';
+import LoginScreen from './Login';
 import firebase from 'firebase';
 const { width,height } = Dimensions.get('window');
 
@@ -26,32 +26,110 @@ export default class Login extends Component {
             isDateTimePickerVisible: false,
             name: '',
             email: '',
+            newPass: '',
             password: '',
+            image: 'https://www.iiitdm.ac.in/img/bog/4.jpg',
+            isLoading: false,
+            isReg: false,
             avatar: '',
-            mobile: '',
-            image: ''
         };
     }
     onPressCreate = async () => {
-        const user = {
-            name: this.state.name,
-            email: this.state.email,
-            password: this.state.password,
-            mobile: this.state.mobile,
-            image: this.state.image
-        };
-		firebase
-        .auth()
-        .createUserWithEmailAndPassword(user.email, user.password)
-        .then((response)=> {
-                firebase.database().ref('users/'+response.user.uid).set({name:user.name,email:user.email,mobile:user.mobile,image:user.image});
-                alert('User ' + user.name + ' was created successfully. Please login.');
-                this.props.navigation.navigate('Auth');
-            },
-            function(error) {
-                alert('Create account failed. Error: ' + error.message);
-            }
-        );
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (this.state.name == "") {
+            Toast.show({
+                text: 'Name is required',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else if (this.state.name.length < 6) {
+            Toast.show({
+              text: 'At least 6 char in Name',
+              buttonText: 'Okay',
+              position: 'top',
+              type: 'danger'
+            })
+        }
+        else if (this.state.email == "") {
+            Toast.show({
+              text: 'Email is required',
+              buttonText: 'Okay',
+              position: 'top',
+              type: 'danger'
+            })
+        }
+        else if (reg.test(this.state.email) === false) {
+            Toast.show({
+                text: 'Incorrect Email Format',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else if (this.state.newPass == "") {
+            Toast.show({
+                text: 'Password is required',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else if (this.state.newPass.length < 6) {
+            Toast.show({
+                text: 'At least 6 char in Password',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else if (this.state.password == "") {
+            Toast.show({
+                text: 'Password is required',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else if (this.state.password !== this.state.newPass) {
+            Toast.show({
+                text: 'Password is not match',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else {
+            this.setState({isLoading:true})
+            const user = {
+                name: this.state.name,
+                email: this.state.email,
+                password: this.state.password,
+                image: this.state.image
+            };
+            firebase
+            .auth()
+            .createUserWithEmailAndPassword(user.email, user.password)
+            .then((response)=> {
+                    firebase.database().ref('users/'+response.user.uid).set({name:user.name,email:user.email,password:user.password,image:user.image});
+                    this.setState({isLoading:false,isReg:true})
+                    Toast.show({
+                        text: 'Register Success, please login !',
+                        position: 'top',
+                        type: 'success'
+                    })
+                },
+                function(error) {
+                    this.setState({isLoading: false})
+                    Toast.show({
+                        text: 'Register failed, Try again !',
+                        position: 'top',
+                        type: 'danger'
+                    })
+                }
+            );
+        }
     };
     // onPressCreate = async () => {
 	// 	try {
@@ -66,11 +144,11 @@ export default class Login extends Component {
 	// 	}
 	// };
 
+    onChangeTextName = name => this.setState({ name });
 	onChangeTextEmail = email => this.setState({ email });
+	onChangeTextNewPass = newPass => this.setState({ newPass });
 	onChangeTextPassword = password => this.setState({ password });
-	onChangeTextName = name => this.setState({ name });
-	onChangeTextMobile = mobile => this.setState({ mobile });
-	onChangeTextImage = image => this.setState({ image });
+	
 
 	// onImageUpload = async () => {
 	// 	const { status: cameraRollPerm } = await Permissions.askAsync(
@@ -135,6 +213,9 @@ export default class Login extends Component {
     render() {
         return (
             <View style={styles.container}>
+            {   
+                this.state.isLoading == true ? <ActivityIndicator size={'large'}/> : this.state.isReg == true ? <LoginScreen/> :
+                (
                 <View style={styles.contain}>
                     <View style={styles.header}>
                         <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
@@ -152,81 +233,44 @@ export default class Login extends Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <ScrollView>
+                    
                     <View style={styles.body}>
-                        <View style={{flex:5,justifyContent:'center'}}>
-                            <Text style={{marginBottom:15}}>Your Name</Text>
+                        <View style={{flex:7,justifyContent:'center'}}>
+                            <Text style={{marginBottom:15,marginTop:25}}>Your Name</Text>
                             <TextInput style={styles.input} placeholder={"Name"} 
-                            
                             onChangeText={this.onChangeTextName}
 					        value={this.state.name}/>
                             <Text style={{marginBottom:15}}>Your Email</Text>
                             <TextInput style={styles.input} placeholder={"Email"}
-                            
                             onChangeText={this.onChangeTextEmail}
 					        value={this.state.email}/>
-                            <Text style={{marginBottom:5}}>Gender</Text>
-                            <View style={{height:50,flexDirection:'row',marginBottom:10}}>
-                                <TouchableOpacity 
-                                onPress={() => this.setState({checkedMale: !this.state.checkedMale,disabledFemale:!this.state.disabledFemale})} 
-                                style={{flex:1,flexDirection:'row',backgroundColor:'#eee',marginRight:7,alignItems:'center',padding:10,borderRadius:9}}>
-                                    <CheckBox
-                                        value={this.state.checkedMale}
-                                        onChange={() => this.setState({checkedMale: !this.state.checkedMale,disabledFemale:!this.state.disabledFemale})}
-                                        disabled={this.state.disabledMale}
-                                    />
-                                    <Text>Male</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity 
-                                onPress={() => this.setState({checkedFemale: !this.state.checkedFemale,disabledMale:!this.state.disabledMale})} 
-                                style={{flex:1,flexDirection:'row',backgroundColor:'#eee',marginLeft:7,alignItems:'center',padding:10,borderRadius:9}}>
-                                    <CheckBox
-                                        value={this.state.checkedFemale}
-                                        onChange={() => this.setState({checkedFemale: !this.state.checkedFemale,disabledMale:!this.state.disabledMale})}
-                                        disabled={this.state.disabledFemale}
-                                    />
-                                    <Text>Female</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={{marginBottom:5}}>Birth Date</Text>
-                            <TouchableOpacity onPress={this.showDateTimePicker} style={[styles.input,{height:55,flexDirection:'row',alignItems:'center'}]}>
-                            <Image style={{width:20,height:20,marginRight:15}} source={require('../assets/calendar.png')}/> 
-                                <Text>{this.state.date}</Text>
-                            </TouchableOpacity>
-                            <DateTimePicker
-                                isVisible={this.state.isDateTimePickerVisible}
-                                onConfirm={this.handleDatePicked}
-                                onCancel={this.hideDateTimePicker}
-                            />
                             <Text style={{marginBottom:15}} >Your Password</Text>
+                            <TextInput style={styles.input} placeholder={"Password"}
+                            onChangeText={this.onChangeTextNewPass}
+                            value={this.state.newPass}
+                            secureTextEntry={true}/>
+                            <Text style={{marginBottom:15}} >Confirm Password</Text>
                             <TextInput style={styles.input} placeholder={"Password"}
                             onChangeText={this.onChangeTextPassword}
                             value={this.state.password}
                             secureTextEntry={true}/>
-                            <Text style={{marginBottom:15}} >Mobile</Text>
-                            <TextInput style={styles.input} placeholder={"+62"}
-                            onChangeText={this.onChangeTextMobile}
-					        value={this.state.mobile}/>
-                            <Text style={{marginBottom:15}} >Image Url</Text>
-                            <TextInput style={styles.input} placeholder={"Image Url"}
-                            onChangeText={this.onChangeTextImage}
-					        value={this.state.Image}/>
                         </View>
                         <View style={{flex:1}}>
                             <TouchableOpacity style={styles.btnLogin} onPress={this.onPressCreate}>
                                 <Text style={{color:'#fff'}}>Register</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.footer}>
+
+                    </View>
+                    <View style={styles.footer}>
                         <Text style={{fontSize:13,color:'#999'}}>By creating an account you agree to our</Text>
                         <TouchableOpacity>
                             <Text style={{fontSize:13,color:'#03a9f4'}}>Terms and Conditions</Text>
                         </TouchableOpacity>
                     </View>
-                    </View>
-                    
-                    </ScrollView>
                 </View>
+                )
+            }
             </View>
         )
     }
@@ -236,7 +280,8 @@ const styles = StyleSheet.create({
         flex:1,
         width,
         height,
-        position:'absolute'
+        position:'absolute',
+        justifyContent:'center'
     },
     contain: {
         flex:1,
@@ -263,7 +308,7 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     body: {
-        flex: 8,
+        flex: 10,
         paddingVertical:40,
         paddingHorizontal:40,
         marginTop:80,
@@ -280,7 +325,6 @@ const styles = StyleSheet.create({
     },
     btnLogin: {
         marginTop:20,
-        marginBottom:10,
         backgroundColor:'#03a9f4',
         width:width*0.8,
         borderRadius:12,
@@ -290,11 +334,10 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     footer: {
+        flex:2,
         borderTopWidth:1,
         alignItems:'center',
         borderColor:'#ddd',
         justifyContent:'center',
-        marginTop:20,
-        padding:5
     }
 })

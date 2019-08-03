@@ -25,8 +25,9 @@ class FirebaseSDK {
       .then(success_callback, failed_callback);
       
       await AsyncStorage.setItem('userEmail',user.email)
-      User.email = user.email,
-      this.props.navigation.navigate('App');
+      User.email = user.email
+      User.status = "Online"
+      console.log(User.email,User.status,User.name)
   };
 
   // Sign Up

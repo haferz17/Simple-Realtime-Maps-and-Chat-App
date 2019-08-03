@@ -6,8 +6,12 @@ import {
     Image,
     StyleSheet,
     Dimensions,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator,
 } from 'react-native';
+import { Toast } from 'native-base';
+import Home from './HomeScreen';
+import User from '../config/User';
 import firebaseSDK from '../config/firebaseSDK';
 const { width,height } = Dimensions.get('window');
 
@@ -17,29 +21,45 @@ export default class Login extends Component {
         this.state = {
             email: '',
             password: '',
+            isLoading: false,
+            isLogin: false
         };
     }
     onPressLogin = async () => {
-		const user = {
-			email: this.state.email,
-			password: this.state.password,
-		};
         
-		const response = firebaseSDK.login(
-			user,
-			this.loginSuccess,
-			this.loginFailed
-		);
+        if (this.state.email === "" || this.state.password === "") {
+            Toast.show({
+              text: 'Email or Password is required',
+              buttonText: 'Okay',
+              position: 'top',
+              type: 'danger'
+            })
+        } else {
+            this.setState({isLoading: true})
+            const user = {
+                email: this.state.email,
+                password: this.state.password,
+            };
+            
+            const response = firebaseSDK.login(
+                user,
+                this.loginSuccess,
+                this.loginFailed
+            );
+        }
     };
     loginSuccess = () => {
-		alert('login successful');
-		this.props.navigation.navigate('HomeScreen', {
-			name: this.state.name,
-			email: this.state.email,
-		});
+        this.setState({isLoading: false,isLogin:true})
+        Toast.show({
+            text: 'Login Successful, Welcome !',
+            position: 'top',
+            type: 'success',
+            duration: 3000
+        })
 	};
 
 	loginFailed = () => {
+        this.setState({isLoading: false})
 		alert('Login failure. Please tried again.');
 	};
 
@@ -49,6 +69,9 @@ export default class Login extends Component {
     render() {
         return (
             <View style={styles.container}>
+            {   
+                this.state.isLoading == true ? <ActivityIndicator size={'large'}/> : this.state.isLogin == true ? <Home navigation={this.props.navigation}/> :
+                (
                 <View style={styles.contain}>
                     <View style={styles.header}>
                         <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
@@ -88,7 +111,10 @@ export default class Login extends Component {
                             <Text style={{fontSize:13,color:'#03a9f4'}}>Terms and Conditions</Text>
                         </TouchableOpacity>
                     </View>
+                    
                 </View>
+                )
+            }
             </View>
         )
     }
@@ -98,7 +124,8 @@ const styles = StyleSheet.create({
         flex:1,
         width,
         height,
-        position:'absolute'
+        position:'absolute',
+        justifyContent:'center'
     },
     contain: {
         flex:1,

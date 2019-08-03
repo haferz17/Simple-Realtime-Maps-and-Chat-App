@@ -8,43 +8,42 @@ import {
     ScrollView,
     Dimensions,
     StatusBar,
-    AsyncStorage
+    AsyncStorage,
+    Modal
 } from 'react-native';
 const { width, height } = Dimensions.get('window');
 import firebase from 'firebase';
 import User from '../config/User';
+import EditModal from './EditModal';
 
 export default class Profile extends Component {
-    state = {
-		users: []
-    };
+    constructor(props){
+        super(props);
+        this.state = {
+            fetched: false,
+        }
+    }
     
-    componentWillMount(){
+    componentDidMount(){
 		let dbRef = firebase.database().ref('users');
 		dbRef.on('child_added',(val)=>{
 			let person = val.val();
 			person.uid = val.key;
 			console.log(person.uid)
 			if(person.uid===firebase.auth().currentUser.uid){
-                User.uid = person.uid;
                 User.name = person.name;
                 User.email = person.email;
                 User.mobile = person.mobile;
                 User.avatar = person.image;
-			}
-			else {
-			this.setState((prevState)=>{
-				return {
-					users: [...prevState.users,person]
-				}
-			})
-			} 
+                this.setState({fetched:true})
+            }
+            console.log(User.name,User.email,User.mobile,User.avatar)
 		})
-	}
-
+    }
+    
     _logOut = async () => {
-		await AsyncStorage.clear();
-		this.props.navigation.navigate('Login');
+        await AsyncStorage.clear();
+		this.props.navigation.navigate('Auth');
     }
     
     render() {
@@ -54,8 +53,8 @@ export default class Profile extends Component {
                 <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{flex:1,backgroundColor:'#03a9f4',justifyContent:'center',alignItems:'center',borderBottomLeftRadius:25,borderBottomRightRadius:25}}>
                     <View style={{flex:3,alignItems:'center'}}>
-                        <Image style={{width:130,height:130,borderRadius:65,marginBottom:20}} source={{uri:User.avatar}}/>     
-                        <Text style={{color:'#fff',fontSize:25,fontWeight:'bold'}}>{User.name}</Text>
+                        <Image style={{width:130,height:130,borderRadius:65,marginBottom:15,backgroundColor:'#fff'}} source={{uri:User.avatar}}/>     
+                        <Text style={{color:'#fff',fontSize:25,fontWeight:'bold',marginBottom:5}}>{User.name}</Text>
                     </View>
                     <View style={{flex:1,flexDirection:'row',marginHorizontal:20,marginVertical:15}}>
                         <View style={{flex:1,alignItems:'center'}}>
@@ -66,10 +65,7 @@ export default class Profile extends Component {
                             <Image style={{width:30,height:30,marginBottom:10}} source={require('../assets/delete.png')}/> 
                             <Text style={{color:'#fff'}}>Delete Account</Text>
                         </View>
-                        <View style={{flex:1,alignItems:'center'}}>
-                            <Image style={{width:30,height:30,marginBottom:10}} source={require('../assets/edit.png')}/> 
-                            <Text style={{color:'#fff'}}>Edit Profile</Text>
-                        </View>
+                        <EditModal/>
                     </View>
                 </View>
                 <View style={{flex:1,alignItems:'center'}}>
