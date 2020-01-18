@@ -8,10 +8,14 @@ import {
     Dimensions,
     TouchableOpacity,
     ActivityIndicator,
+    KeyboardAvoidingView,
+    ScrollView
 } from 'react-native';
 import { Toast } from 'native-base';
 import LoginScreen from './Login';
 import firebase from 'firebase';
+import ShowPass from '../components/showPassword';
+
 const { width,height } = Dimensions.get('window');
 
 export default class Login extends Component {
@@ -32,6 +36,8 @@ export default class Login extends Component {
             isLoading: false,
             isReg: false,
             avatar: '',
+            showPass: false,
+            showConfirmPass: false
         };
     }
     onPressCreate = async () => {
@@ -210,11 +216,22 @@ export default class Login extends Component {
         console.log("A date has been picked: ", date);
         this.hideDateTimePicker();
     };
+
+    alertNoFeature  = () => {
+        Toast.show({
+            text: 'Sorry, This feature is not yet available.',
+            position: 'top',
+            type: 'warning',
+            buttonText: 'Okay'
+        })
+    }
+
     render() {
+        const { isLoading, isReg, showPass, showConfirmPass } = this.state
         return (
-            <View style={styles.container}>
+            <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="handled" style={styles.container}>
             {   
-                this.state.isLoading == true ? <ActivityIndicator size={'large'}/> : this.state.isReg == true ? <LoginScreen/> :
+                isLoading == true ? <ActivityIndicator size={'large'}/> : isReg == true ? <LoginScreen/> :
                 (
                 <View style={styles.contain}>
                     <View style={styles.header}>
@@ -234,26 +251,37 @@ export default class Login extends Component {
                         </View>
                     </View>
                     
-                    <View style={styles.body}>
+                    <KeyboardAvoidingView behavior="padding" style={styles.body}>
                         <View style={{flex:7,justifyContent:'center'}}>
+
                             <Text style={{marginBottom:15,marginTop:25}}>Your Name</Text>
                             <TextInput style={styles.input} placeholder={"Name"} 
                             onChangeText={this.onChangeTextName}
 					        value={this.state.name}/>
+
                             <Text style={{marginBottom:15}}>Your Email</Text>
                             <TextInput style={styles.input} placeholder={"Email"}
                             onChangeText={this.onChangeTextEmail}
 					        value={this.state.email}/>
-                            <Text style={{marginBottom:15}} >Your Password</Text>
+
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{marginBottom:15}} >Your Password</Text>
+                                <ShowPass onPress={()=> this.setState({ showPass: !showPass })} showPass={showPass}/>
+                            </View>
                             <TextInput style={styles.input} placeholder={"Password"}
                             onChangeText={this.onChangeTextNewPass}
                             value={this.state.newPass}
-                            secureTextEntry={true}/>
-                            <Text style={{marginBottom:15}} >Confirm Password</Text>
+                            secureTextEntry={showPass ? false:true}/>
+
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{marginBottom:15}} >Confirm Password</Text>
+                                <ShowPass onPress={()=> this.setState({ showConfirmPass: !showConfirmPass })} showPass={showConfirmPass}/>
+                            </View>
                             <TextInput style={styles.input} placeholder={"Password"}
                             onChangeText={this.onChangeTextPassword}
                             value={this.state.password}
-                            secureTextEntry={true}/>
+                            secureTextEntry={showConfirmPass ? false:true}/>
+
                         </View>
                         <View style={{flex:1}}>
                             <TouchableOpacity style={styles.btnLogin} onPress={this.onPressCreate}>
@@ -261,17 +289,17 @@ export default class Login extends Component {
                             </TouchableOpacity>
                         </View>
 
-                    </View>
+                    </KeyboardAvoidingView>
                     <View style={styles.footer}>
                         <Text style={{fontSize:13,color:'#999'}}>By creating an account you agree to our</Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={()=> this.alertNoFeature()}>
                             <Text style={{fontSize:13,color:'#03a9f4'}}>Terms and Conditions</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
                 )
             }
-            </View>
+            </ScrollView>
         )
     }
 }
@@ -281,7 +309,6 @@ const styles = StyleSheet.create({
         width,
         height,
         position:'absolute',
-        justifyContent:'center'
     },
     contain: {
         flex:1,
@@ -324,7 +351,7 @@ const styles = StyleSheet.create({
         paddingHorizontal:20
     },
     btnLogin: {
-        marginTop:20,
+        marginTop:15,
         backgroundColor:'#03a9f4',
         width:width*0.8,
         borderRadius:12,
@@ -334,7 +361,7 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     footer: {
-        flex:2,
+        flex:1.9,
         borderTopWidth:1,
         alignItems:'center',
         borderColor:'#ddd',

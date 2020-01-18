@@ -8,12 +8,14 @@ import {
     Dimensions,
     TouchableOpacity,
     ActivityIndicator,
-    AsyncStorage
+    AsyncStorage,
+    ScrollView
 } from 'react-native';
 import { Toast } from 'native-base';
 import Home from './HomeScreen';
 import User from '../config/User';
 import firebaseSDK from '../config/firebaseSDK';
+import ShowPass from "../components/showPassword";
 const { width,height } = Dimensions.get('window');
 
 export default class Login extends Component {
@@ -92,7 +94,7 @@ export default class Login extends Component {
     render() {
         const { isLoading, isLogin, showPass } = this.state
         return (
-            <View style={styles.container}>
+            <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="handled" style={styles.container}>
             {   
                 isLoading == true ? <ActivityIndicator size={'large'}/> : isLogin == true ? <Home navigation={this.props.navigation}/> :
                 (
@@ -119,9 +121,7 @@ export default class Login extends Component {
                             <TextInput style={styles.input} placeholder={"Email"} onChangeText={this.onChangeTextEmail}/>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text style={{marginBottom:15}} >Your Password</Text>
-                                <TouchableOpacity onPress={()=> this.setState({ showPass: !showPass })}>
-                                    <Image source={require('../assets/eye.png')} style={{ height: 25, width: 25 }}/>
-                                </TouchableOpacity>
+                                <ShowPass onPress={()=> this.setState({ showPass: !showPass })} showPass={showPass}/>
                             </View>
                             <TextInput style={styles.input} secureTextEntry={ showPass ? false:true } placeholder={"Password"} onChangeText={this.onChangeTextPassword}/>
                         </View>
@@ -144,7 +144,7 @@ export default class Login extends Component {
                 </View>
                 )
             }
-            </View>
+            </ScrollView>
         )
     }
 }
@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
         width,
         height,
         position:'absolute',
-        justifyContent:'center'
     },
     contain: {
         flex:1,
