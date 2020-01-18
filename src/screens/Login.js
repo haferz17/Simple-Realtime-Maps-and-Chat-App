@@ -8,6 +8,7 @@ import {
     Dimensions,
     TouchableOpacity,
     ActivityIndicator,
+    AsyncStorage
 } from 'react-native';
 import { Toast } from 'native-base';
 import Home from './HomeScreen';
@@ -22,11 +23,12 @@ export default class Login extends Component {
             email: '',
             password: '',
             isLoading: false,
-            isLogin: false
+            isLogin: false,
+            showPass: false
         };
     }
+
     onPressLogin = async () => {
-        
         if (this.state.email === "" || this.state.password === "") {
             Toast.show({
               text: 'Email or Password is required',
@@ -40,16 +42,23 @@ export default class Login extends Component {
                 email: this.state.email,
                 password: this.state.password,
             };
-            
-            const response = firebaseSDK.login(
+            firebaseSDK.login(
                 user,
                 this.loginSuccess,
                 this.loginFailed
             );
         }
     };
+
     loginSuccess = () => {
-        this.setState({isLoading: false,isLogin:true})
+        this.setState({ isLoading: false, isLogin: true })
+        const user = {
+            email: this.state.email,
+            password: this.state.password,
+        };
+        AsyncStorage.setItem('userEmail',user.email)
+        User.email = user.email
+        User.status = "Online"
         Toast.show({
             text: 'Login Successful, Welcome !',
             position: 'top',
@@ -59,18 +68,33 @@ export default class Login extends Component {
 	};
 
 	loginFailed = () => {
-        this.setState({isLoading: false})
-		alert('Login failure. Please tried again.');
-	};
+        this.setState({ isLoading: false })
+        Toast.show({
+            text: 'Login failure. Please try again.',
+            position: 'top',
+            type: 'danger',
+            buttonText: 'Okay'
+        })
+    };
+    
+    alertNoFeature  = () => {
+        Toast.show({
+            text: 'Sorry, This feature is not yet available.',
+            position: 'top',
+            type: 'warning',
+            buttonText: 'Okay'
+        })
+    }
 
 	onChangeTextEmail = email => this.setState({ email });
     onChangeTextPassword = password => this.setState({ password });
     
     render() {
+        const { isLoading, isLogin, showPass } = this.state
         return (
             <View style={styles.container}>
             {   
-                this.state.isLoading == true ? <ActivityIndicator size={'large'}/> : this.state.isLogin == true ? <Home navigation={this.props.navigation}/> :
+                isLoading == true ? <ActivityIndicator size={'large'}/> : isLogin == true ? <Home navigation={this.props.navigation}/> :
                 (
                 <View style={styles.contain}>
                     <View style={styles.header}>
@@ -93,21 +117,26 @@ export default class Login extends Component {
                         <View style={{flex:5,justifyContent:'center'}}>
                             <Text style={{marginBottom:15}}>Your Email</Text>
                             <TextInput style={styles.input} placeholder={"Email"} onChangeText={this.onChangeTextEmail}/>
-                            <Text style={{marginBottom:15}} >Your Password</Text>
-                            <TextInput style={styles.input} secureTextEntry={true} placeholder={"Password"} onChangeText={this.onChangeTextPassword}/>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{marginBottom:15}} >Your Password</Text>
+                                <TouchableOpacity onPress={()=> this.setState({ showPass: !showPass })}>
+                                    <Image source={require('../assets/eye.png')} style={{ height: 25, width: 25 }}/>
+                                </TouchableOpacity>
+                            </View>
+                            <TextInput style={styles.input} secureTextEntry={ showPass ? false:true } placeholder={"Password"} onChangeText={this.onChangeTextPassword}/>
                         </View>
                         <View style={{flex:1}}>
                             <TouchableOpacity style={styles.btnLogin} onPress={this.onPressLogin}>
                                 <Text style={{color:'#fff'}}>Login</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={{marginBottom:10,alignSelf:'center'}}>
+                            <TouchableOpacity onPress={()=> this.alertNoFeature()} style={{marginBottom:10,alignSelf:'center'}}>
                                 <Text  style={{color:'#03a9f4'}}>Forgot Password?</Text>
                             </TouchableOpacity> 
                         </View>
                     </View>
                     <View style={styles.footer}>
                         <Text style={{fontSize:13,color:'#999'}}>By creating an account you agree to our</Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={()=> this.alertNoFeature()}>
                             <Text style={{fontSize:13,color:'#03a9f4'}}>Terms and Conditions</Text>
                         </TouchableOpacity>
                     </View>

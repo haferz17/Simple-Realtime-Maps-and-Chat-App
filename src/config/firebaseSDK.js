@@ -1,6 +1,4 @@
-import { AsyncStorage } from 'react-native';
 import firebase from 'firebase';
-import User from './User';
 
 class FirebaseSDK {
   constructor() {
@@ -23,11 +21,6 @@ class FirebaseSDK {
       .auth()
       .signInWithEmailAndPassword(user.email, user.password)
       .then(success_callback, failed_callback);
-      
-      await AsyncStorage.setItem('userEmail',user.email)
-      User.email = user.email
-      User.status = "Online"
-      console.log(User.email,User.status,User.name)
   };
 
   // Sign Up
