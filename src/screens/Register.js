@@ -7,16 +7,16 @@ import {
     StyleSheet,
     Dimensions,
     TouchableOpacity,
-    ActivityIndicator,
+    StatusBar,
     KeyboardAvoidingView,
     ScrollView
 } from 'react-native';
 import { Toast } from 'native-base';
-import LoginScreen from './Login';
+import Loading from '../components/loading';
 import firebase from 'firebase';
 import ShowPass from '../components/showPassword';
 
-const { width,height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default class Login extends Component {
     constructor(props){
@@ -230,9 +230,9 @@ export default class Login extends Component {
         const { isLoading, isReg, showPass, showConfirmPass } = this.state
         return (
             <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="handled" style={styles.container}>
-            {   
-                isLoading == true ? <ActivityIndicator size={'large'}/> : isReg == true ? <LoginScreen/> :
-                (
+                <StatusBar backgroundColor='#4dd0e1'/>
+                <Loading isLoading={isLoading} text="Please Wait ..."/>
+                {  isReg == true ? this.props.navigation.navigate('Login') : (
                 <View style={styles.contain}>
                     <View style={styles.header}>
                         <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
@@ -297,8 +297,7 @@ export default class Login extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-                )
-            }
+                )}
             </ScrollView>
         )
     }

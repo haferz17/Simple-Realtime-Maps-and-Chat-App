@@ -96,7 +96,7 @@ export default class HomeScreen extends Component {
     // //   }
     render() {
         return (
-            <View style={{flex:1,heigth:100}}>
+            <View style={{ flex:1 }}>
                 <StatusBar backgroundColor="#4dd0e1" barStyle="light-content" />
                 <MapView
                     style={{...StyleSheet.absoluteFillObject}}

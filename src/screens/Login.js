@@ -7,16 +7,19 @@ import {
     StyleSheet,
     Dimensions,
     TouchableOpacity,
-    ActivityIndicator,
     AsyncStorage,
-    ScrollView
+    ScrollView,
+    StatusBar,
+    KeyboardAvoidingView,
+    Keyboard
 } from 'react-native';
 import { Toast } from 'native-base';
 import Home from './HomeScreen';
 import User from '../config/User';
 import firebaseSDK from '../config/firebaseSDK';
 import ShowPass from "../components/showPassword";
-const { width,height } = Dimensions.get('window');
+import Loading from '../components/loading';
+const { width, height } = Dimensions.get('window');
 
 export default class Login extends Component {
     constructor(props){
@@ -39,7 +42,8 @@ export default class Login extends Component {
               type: 'danger'
             })
         } else {
-            this.setState({isLoading: true})
+            Keyboard.dismiss()
+            this.setState({ isLoading: true })
             const user = {
                 email: this.state.email,
                 password: this.state.password,
@@ -95,9 +99,9 @@ export default class Login extends Component {
         const { isLoading, isLogin, showPass } = this.state
         return (
             <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="handled" style={styles.container}>
-            {   
-                isLoading == true ? <ActivityIndicator size={'large'}/> : isLogin == true ? <Home navigation={this.props.navigation}/> :
-                (
+                <StatusBar backgroundColor='#4dd0e1'/>
+                <Loading isLoading={isLoading} text="Please Wait ..."/>
+                { isLogin == true ? this.props.navigation.navigate('HomeScreen') : (
                 <View style={styles.contain}>
                     <View style={styles.header}>
                         <View style={{flex:3,justifyContent:'center',alignItems:'center'}}>
@@ -115,8 +119,8 @@ export default class Login extends Component {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={styles.body}>
-                        <View style={{flex:5,justifyContent:'center'}}>
+                    <KeyboardAvoidingView behavior="padding" style={styles.body}>
+                        <View style={{flex:2.5,justifyContent:'center'}}>
                             <Text style={{marginBottom:15}}>Your Email</Text>
                             <TextInput style={styles.input} placeholder={"Email"} onChangeText={this.onChangeTextEmail}/>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -133,7 +137,7 @@ export default class Login extends Component {
                                 <Text  style={{color:'#03a9f4'}}>Forgot Password?</Text>
                             </TouchableOpacity> 
                         </View>
-                    </View>
+                    </KeyboardAvoidingView>
                     <View style={styles.footer}>
                         <Text style={{fontSize:13,color:'#999'}}>By creating an account you agree to our</Text>
                         <TouchableOpacity onPress={()=> this.alertNoFeature()}>
@@ -142,8 +146,7 @@ export default class Login extends Component {
                     </View>
                     
                 </View>
-                )
-            }
+                )}
             </ScrollView>
         )
     }
@@ -165,7 +168,10 @@ const styles = StyleSheet.create({
         flex: 2,
         flexDirection:'row',
         borderBottomWidth:2,
-        borderColor:'#ddd'
+        borderColor:'#ddd',
+        position: 'absolute',
+        zIndex:3,
+        paddingVertical:15,
     },
     bgImage: {
         backgroundColor:'#03a9f4',
@@ -176,9 +182,11 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     body: {
-        flex: 8,
+        flex: 10,
         paddingVertical:40,
         paddingHorizontal:40,
+        marginTop: 80,
+        zIndex: 1
     },
     input: {
         width:width*0.8,
