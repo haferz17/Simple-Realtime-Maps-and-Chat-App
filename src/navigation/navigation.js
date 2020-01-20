@@ -17,12 +17,39 @@ import Chat from "../screens/Chat";
 import ChatRoom from "../screens/ChatRoom";
 import AuthLoading from "../screens/AuthLoading";
 import FriendsProfile from "../screens/FriendsProfile";
+import user from '../config/User';
 
 const AppStack = createStackNavigator({
   HomeScreen: {
     screen: HomeScreen,
     navigationOptions: ({ navigation }) => ({
-      header: null,
+      title: 'Home',
+      headerTitleStyle: {
+        textAlign: "center",
+        flexGrow: 1,
+        color: "#03a9f4",
+      },
+      headerStyle: {
+        backgroundColor: "#fff",
+        borderBottomWidth: 0,
+        elevation: 5,
+      },
+      headerLeft: (
+        <TouchableOpacity onPress={()=>navigation.navigate('Profile')}>
+          <Image
+            style={{ width: 30, height: 30, marginLeft: 15 }}
+            source={{uri: user.avatar}}
+          />
+        </TouchableOpacity>
+      ),
+      headerRight: (
+        <TouchableOpacity onPress={()=>navigation.navigate('Chat')}>
+          <Image
+            style={{ width: 30, height: 30, marginRight: 15 }}
+            source={require("../assets/chat.png")}
+          />
+        </TouchableOpacity>
+      ),
     }),
   },
   Login: {

@@ -4,7 +4,7 @@ const User = {
     email: null,
     status: "Offline",
     mobile: null,
-    avatar: null,
+    avatar: 'https://www.iiitdm.ac.in/img/bog/4.jpg',
     location : {
         latitude: null,
         longitude: null

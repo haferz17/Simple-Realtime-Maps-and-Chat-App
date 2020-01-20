@@ -12,7 +12,7 @@ from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import firebase from 'firebase';
 import User from '../config/User';
-const width = Dimensions.get('window').width
+const { width, height } = Dimensions.get('window')
 const widthImg = width * 0.8
 
 export default class FriendsCarousel extends Component {
@@ -69,57 +69,23 @@ export default class FriendsCarousel extends Component {
 	}
     render(){
         return(
-            <View style={styles.container}>
-                <TouchableOpacity 
-                    style={{position:'absolute',top:40,left:20,elevation:10,backgroundColor:'#fff',borderRadius:30,width:50,height:50}} 
-                    onPress={()=>this.props.navigation.navigate('Profile')}>
-                    <Image style={{width:50,height:50,marginRight:15,borderRadius:30}} source={{uri:User.avatar}}/>
-                </TouchableOpacity>
-                <TouchableOpacity style={{position:'absolute',top:40,right:20,elevation:10,backgroundColor:'#fff',borderRadius:30,width:45,height:45,justifyContent:'center'}} onPress={()=>this.props.navigation.navigate('Chat')}>
-                    <Image style={{width:40,height:40,marginRight:15}} source={require('../assets/chat.png')}/>
-                </TouchableOpacity>
-                {
-                    this.state.isLoading == true ? <ActivityIndicator style={{backgroundColor:'#fff',padding:10,alignSelf:'center',elevation:5,borderRadius:5}} size='large' color='#03a9f4'/> : 
-                        (
-                <View style={{position:'absolute',bottom:0}}>
-                    <View style={{flex:1,alignItems: 'center'}}>
-                        {/* <Text style={{margin:15,fontSize:16,fontWeight:'bold',color:'#fff'}}>Friend List</Text>  */}
-                    </View>
-                    <View style={{flex:3}}>
-                    
-                        <View>
-                            <Carousel
-                                ref={ ref => this.carouselRef = ref }
-                                data={ this.state.users }
-                                renderItem={ this.renderRow }
-                                sliderWidth={ width }
-                                itemWidth={ widthImg }
-                                slideStyle={{paddingHorizontal:7}}
-                                inactiveSlideOpacity={ 1 }
-                                inactiveSlideScale={ 1 }
-                                loop={true}
-                            />
-                        </View>
-                         
-                    </View> 
-                     
-                </View>
-                )
-            }
+            <View style={{position:'absolute',bottom: 0, height: height*0.22, justifyContent: 'center'}}>
+                <Carousel
+                    ref={ ref => this.carouselRef = ref }
+                    data={ this.state.users }
+                    renderItem={ this.renderRow }
+                    sliderWidth={ width }
+                    itemWidth={ widthImg }
+                    slideStyle={{paddingHorizontal:7, alignSelf: 'center'}}
+                    inactiveSlideOpacity={ 1 }
+                    inactiveSlideScale={ 1 }
+                    loop={true}
+                />
             </View>
         )
     }
 }
 const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        marginTop:15,
-        backgroundColor:'transparent',
-        height:200,
-        borderTopLeftRadius:20,
-        borderTopRightRadius:20,
-        justifyContent:'center'
-    },
     image: {
         height: 85,
         width: width * 0.24,
