@@ -24,7 +24,7 @@ export default class FriendsCarousel extends Component {
         }
     }
 
-    componentWillMount(){
+    componentDidMount(){
 		let dbRef = firebase.database().ref('users');
 		dbRef.on('child_added',(val)=>{
 			let person = val.val();

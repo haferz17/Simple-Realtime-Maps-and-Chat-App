@@ -18,7 +18,7 @@ export default class ChatRoom extends Component {
             messageList: []
         }
     }
-    componentWillMount(){
+    componentDidMount(){
         firebase.database().ref('messages').child(User.uid).child(this.state.person.uid)
             .on('child_added',(value)=>{
                 this.setState((prevState)=>{

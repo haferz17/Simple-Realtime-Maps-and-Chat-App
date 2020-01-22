@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Image, TouchableOpacity } from "react-native";
+import { Image, TouchableOpacity, View, Text } from "react-native";
 
 //Import Navigations
 import {
@@ -13,6 +13,7 @@ import HomeScreen from "../screens/HomeScreen";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
 import Profile from "../screens/Profile";
+import EditProfile from "../screens/EditProfile";
 import Chat from "../screens/Chat";
 import ChatRoom from "../screens/ChatRoom";
 import AuthLoading from "../screens/AuthLoading";
@@ -28,6 +29,7 @@ const AppStack = createStackNavigator({
         textAlign: "center",
         flexGrow: 1,
         color: "#03a9f4",
+        fontWeight: 'bold'  
       },
       headerStyle: {
         backgroundColor: "#fff",
@@ -72,19 +74,44 @@ const AppStack = createStackNavigator({
         textAlign: "center",
         flexGrow: 1,
         color: "#fff",
+        fontWeight: 'bold'
       },
+      headerTintColor: '#fff',
       headerStyle: {
         backgroundColor: "#03a9f4",
         borderBottomWidth: 0,
         elevation: 0,
       },
       headerRight: (
-        <TouchableOpacity onPress={navigation.getParam("addNotes")}>
-          <Image
-            style={{ width: 30, height: 30, marginRight: 15 }}
-            source={require("../assets/chat.png")}
-          />
-        </TouchableOpacity>
+        <View>
+          <Text style={{ color: '#03a9f4' }}>Icon</Text>
+        </View>
+      ),
+    }),
+    headerLeft: {
+      color: "#fff",
+    },
+  },
+  EditProfile: {
+    screen: EditProfile,
+    navigationOptions: ({ navigation }) => ({
+      title: 'Edit Profile',
+      headerTitleStyle: {
+        textAlign: "center",
+        flexGrow: 1,
+        color: "#fff",
+        fontWeight: 'bold'
+      },
+      headerTintColor: '#fff',
+      headerStyle: {
+        backgroundColor: "#03a9f4",
+        borderBottomWidth: 0,
+        elevation: 0,
+      },
+      headerRight: (
+        <View>
+          <Text style={{ color: '#03a9f4' }}>Icon</Text>
+        </View>
       ),
     }),
     headerLeft: {
@@ -127,6 +154,7 @@ const AppStack = createStackNavigator({
         flexGrow: 1,
         color: "#fff",
       },
+      headerTintColor: '#fff',
       headerStyle: {
         backgroundColor: "#03a9f4",
         borderBottomWidth: 0,

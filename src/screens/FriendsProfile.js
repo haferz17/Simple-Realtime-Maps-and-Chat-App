@@ -27,7 +27,7 @@ export default class Profile extends Component {
         }
     }
     
-    componentWillMount(){
+    componentDidMount(){
         firebase.database().ref('users').child(this.state.person.uid)
             .on('child_added',(value)=>{
                 this.setState((prevState)=>{

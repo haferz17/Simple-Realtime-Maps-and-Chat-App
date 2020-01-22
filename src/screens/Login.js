@@ -17,6 +17,7 @@ import { Toast } from 'native-base';
 import Home from './HomeScreen';
 import User from '../config/User';
 import firebaseSDK from '../config/firebaseSDK';
+import firebase from 'firebase';
 import ShowPass from "../components/showPassword";
 import Loading from '../components/loading';
 const { width, height } = Dimensions.get('window');
@@ -63,8 +64,21 @@ export default class Login extends Component {
             password: this.state.password,
         };
         AsyncStorage.setItem('userEmail',user.email)
-        User.email = user.email
-        User.status = "Online"
+        let dbRef = firebase.database().ref('users');
+		dbRef.on('child_added',(val)=>{
+            let person = val.val();
+			person.uid = val.key;
+			if(person.uid===firebase.auth().currentUser.uid){
+                User.name = person.name;
+                User.email = person.email;
+                User.mobile = person.mobile;
+                User.avatar = person.image;
+                User.gender = person.gender;
+                User.birth = person.birth;
+                User.status = "Online"
+            }
+		})
+        
         Toast.show({
             text: 'Login Successful, Welcome !',
             position: 'top',

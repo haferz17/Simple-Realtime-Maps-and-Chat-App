@@ -118,7 +118,15 @@ export default class Login extends Component {
             .auth()
             .createUserWithEmailAndPassword(user.email, user.password)
             .then((response)=> {
-                    firebase.database().ref('users/'+response.user.uid).set({name:user.name,email:user.email,password:user.password,image:user.image});
+                    firebase.database().ref('users/'+response.user.uid).set({
+                        name: user.name,
+                        email: user.email,
+                        password: user.password,
+                        image: user.image,
+                        mobile: '',
+                        gender: '',
+                        birth: ''
+                    });
                     this.setState({isLoading:false,isReg:true})
                     Toast.show({
                         text: 'Register Success, please login !',

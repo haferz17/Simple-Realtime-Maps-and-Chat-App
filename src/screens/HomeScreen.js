@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Carousel from '../components/Carousel';
-import User from '../config/User';
 const { Width, height } = Dimensions.get('window');
 
 export default class HomeScreen extends Component {

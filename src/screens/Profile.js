@@ -14,36 +14,51 @@ import {
 const { width, height } = Dimensions.get('window');
 import firebase from 'firebase';
 import User from '../config/User';
-import EditModal from './EditModal';
+import moment from 'moment';
+import { Toast } from 'native-base';
 
 export default class Profile extends Component {
     constructor(props){
         super(props);
         this.state = {
-            fetched: false,
+            isFetched: false
         }
     }
-    
+
     componentDidMount(){
-		let dbRef = firebase.database().ref('users');
-		dbRef.on('child_added',(val)=>{
-			let person = val.val();
-			person.uid = val.key;
-			console.log(person.uid)
-			if(person.uid===firebase.auth().currentUser.uid){
-                User.name = person.name;
-                User.email = person.email;
-                User.mobile = person.mobile;
-                User.avatar = person.image;
-                this.setState({fetched:true})
+        const didFocusSubscription = this.props.navigation.addListener(
+            'didFocus',
+            payload => { 
+                let dbRef = firebase.database().ref('users');
+                dbRef.on('child_added',(val)=>{
+                    let person = val.val();
+                    person.uid = val.key;
+                    if(person.uid===firebase.auth().currentUser.uid){
+                        User.name = person.name;
+                        User.email = person.email;
+                        User.mobile = person.mobile;
+                        User.avatar = person.image;
+                        User.gender = person.gender;
+                        User.birth = person.birth;
+                    }
+                    this.setState({ isFetched: true })
+                })
             }
-            console.log(User.name,User.email,User.mobile,User.avatar)
-		})
+        )
     }
     
     _logOut = async () => {
         await AsyncStorage.clear();
 		this.props.navigation.navigate('Auth');
+    }
+
+    alertNoFeature  = () => {
+        Toast.show({
+            text: 'Sorry, This feature is not yet available.',
+            position: 'top',
+            type: 'warning',
+            buttonText: 'Okay'
+        })
     }
     
     render() {
@@ -57,28 +72,46 @@ export default class Profile extends Component {
                         <Text style={{color:'#fff',fontSize:25,fontWeight:'bold',marginBottom:5}}>{User.name}</Text>
                     </View>
                     <View style={{flex:1,flexDirection:'row',marginHorizontal:20,marginVertical:15}}>
-                        <View style={{flex:1,alignItems:'center'}}>
+                        <TouchableOpacity onPress={()=> this.alertNoFeature()} style={{flex:1,alignItems:'center'}}>
                             <Image style={{width:30,height:30,marginBottom:10}} source={require('../assets/photo.png')}/> 
                             <Text style={{color:'#fff'}}>Upload Photo</Text>
-                        </View>
-                        <View style={{flex:1,alignItems:'center'}}>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> this.alertNoFeature()} style={{flex:1,alignItems:'center'}}>
                             <Image style={{width:30,height:30,marginBottom:10}} source={require('../assets/delete.png')}/> 
                             <Text style={{color:'#fff'}}>Delete Account</Text>
-                        </View>
-                        <EditModal/>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{flex:1,alignItems:'center'}} onPress={()=>this.props.navigation.navigate('EditProfile')}>
+                            <Image style={{width:30,height:30,marginBottom:10,alignSelf:'center'}} source={require('../assets/edit.png')}/> 
+                            <Text style={{color:'#fff'}}>Edit Profile</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
                 <View style={{flex:1,alignItems:'center'}}>
                     <View style={{flex:1,width:width*0.9,height:150,backgroundColor:'#f9f9f9',marginTop:20,borderRadius:9,elevation:1,padding:15}}>
                         <Text style={{alignSelf:'center',marginBottom:10,color:'#777',fontSize:20}}>Contact</Text>
-                        <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Email : {User.email}</Text>
-                        <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Mobile  : {User.mobile}</Text>
+                        <View style={{ flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1 }}>
+                            <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Email</Text></View>
+                            <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {User.email}</Text></View>
+                        </View>
+                        <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
+                            <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Mobile</Text></View>
+                            <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {User.mobile}</Text></View>
+                        </View>
                     </View>
                     <View style={{flex:1,width:width*0.9,height:200,backgroundColor:'#f9f9f9',marginTop:20,borderRadius:9,elevation:1,padding:15}}>
                         <Text style={{alignSelf:'center',marginBottom:10,color:'#777',fontSize:20}}>Biodata</Text>
-                        <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Nama : {User.name}</Text>
-                        <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Gender  : </Text>
-                        <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Birth Date  : </Text>
+                        <View style={{ flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1 }}>
+                            <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Name</Text></View>
+                            <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {User.name}</Text></View>
+                        </View>
+                        <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
+                            <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Gender</Text></View>
+                            <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {User.gender ? (User.gender == "l" ? "Male" : "Female") : null}</Text></View>
+                        </View>
+                        <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
+                            <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Birth Date</Text></View>
+                            <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {moment(User.birth).format("DD MMMM YYYY")}</Text></View>
+                        </View>
                     </View>
                 </View>
                 <View style={{flex:1,alignItems:'center'}}>
