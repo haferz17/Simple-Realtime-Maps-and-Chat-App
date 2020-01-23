@@ -110,7 +110,7 @@ export default class Profile extends Component {
                         </View>
                         <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
                             <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Birth Date</Text></View>
-                            <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {moment(User.birth).format("DD MMMM YYYY")}</Text></View>
+                            <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {User.birth !== '' ? moment(User.birth).format("DD MMMM YYYY"):''}</Text></View>
                         </View>
                     </View>
                 </View>

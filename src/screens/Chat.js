@@ -40,24 +40,29 @@ export default class Chat extends Component {
 			
 		)
 	}
+
 	render() {
-		console.log(this.state.users)
 		return (
 			<View style={{flex:1,backgroundColor:'#03a9f4'}}>
 				<StatusBar backgroundColor="#03a9f4" barStyle="light-content" />
 				<View style={{flex:1,justifyContent:'flex-start',backgroundColor:'#03a9f4'}}>
 					<Text style={{color:'#fff',marginLeft:20,fontSize:25,fontWeight:'bold'}}>Message</Text>
 				</View>
-				<View style={{flex:1,backgroundColor:'#fff',borderTopLeftRadius:25,borderTopRightRadius:25}}>
-				<Text style={{alignSelf:'center',marginVertical:20}}>Recent Chat</Text> 
+				<View style={{ flex:1, backgroundColor:'#fff', borderTopLeftRadius:25, borderTopRightRadius:25, flexDirection: 'column' }}>
+					<View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', paddingTop: 10 }}>
+						<Text style={{ fontSize: 20, color: '#03a9f4', fontWeight: 'bold' }}>List Contact</Text> 
+					</View>
+					<View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start' }}>
+						<Text style={{ fontSize: 15, color: '#999' }}>Tap to chat</Text> 
+					</View>
 				</View>
 				<View style={{flex:8}}>
-				<FlatList
-					style={{width,height,backgroundColor:'#f4f4f4',bordeTopLeftRadius:25}}
-					data={this.state.users}
-					renderItem={this.renderRow}
-					keyExtractor={(item) => item.uid}
-				/>
+					<FlatList
+						style={{width,height,backgroundColor:'#f4f4f4',bordeTopLeftRadius:25}}
+						data={this.state.users}
+						renderItem={this.renderRow}
+						keyExtractor={(item) => item.uid}
+					/>
 				</View>
 			</View>
 		)
