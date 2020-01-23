@@ -23,11 +23,10 @@ export default class EditProfile extends Component {
         super(props);
         this.state = {
             name: user.name,
-            email: user.email,
+            // email: user.email,
             mobile: user.mobile,
             gender: user.gender,
             birth: user.birth,
-            modalVisible: false,
             isDateTimePickerVisible: false,
         }
     }
@@ -51,24 +50,13 @@ export default class EditProfile extends Component {
     };
 
     onChangeTextName = name => this.setState({ name });
-	onChangeTextEmail = email => this.setState({ email });
+	// onChangeTextEmail = email => this.setState({ email });
 	onChangeTextMobile = mobile => this.setState({ mobile });
 	// onChangeTextNewPass = newPass => this.setState({ newPass });
     // onChangeTextPassword = password => this.setState({ password });
     
-    updateProfile = () => {
-        const { name, email, mobile, gender, birth, modalVisible } = this.state
-        let upName = name ? name : user.name
-        let upMobile = mobile ? mobile : user.mobile
-        let upGender = gender ? gender : user.gender
-        let upBirth = birth ? birth : user.birth
-
-        firebase.database().ref('users/'+user.uid).update({
-            name: upName,
-            mobile: upMobile,
-            gender: upGender,
-            birth: upBirth
-        })
+    updateProfile = (data) => {
+        firebase.database().ref('users/'+user.uid).update(data)
         Toast.show({
             text: 'Your profile has been updated successfully',
             position: 'top',
@@ -76,9 +64,47 @@ export default class EditProfile extends Component {
         })
         this.props.navigation.navigate('Profile')
     }
+
+    validateForm = () => {
+        const { name, mobile, gender, birth } = this.state
+
+        let upName = name
+        let upMobile = mobile
+        let upGender = gender
+        let upBirth = birth
+
+        let data = {
+            name: upName,
+            mobile: upMobile,
+            gender: upGender,
+            birth: upBirth
+        }
+
+        if (name.length < 6) {
+            upName = user.name
+            Toast.show({
+                text: 'At least 6 char in Name',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else if (mobile.length < 10) {
+            upMobile = user.mobile
+            Toast.show({
+                text: 'At least 10 char in Phone Number',
+                buttonText: 'Okay',
+                position: 'top',
+                type: 'danger'
+            })
+        }
+        else {
+            this.updateProfile(data)
+        }
+    }
     
     render() {
-        const { name, email, mobile, gender, birth } = this.state
+        const { name, mobile, gender, birth } = this.state
         return (
             <View style={{flex:1,justifyContent:'center'}}>
                 <View style={{flex: 1, paddingHorizontal: 40, paddingTop: 50}}>
@@ -122,7 +148,7 @@ export default class EditProfile extends Component {
                             >
                             <Text style={{fontSize:17,color:'#fff',marginVertical:10,marginHorizontal:15}}>Batal</Text>
                         </TouchableOpacity> */}
-                        <TouchableOpacity style={{backgroundColor:'#03a9f4',borderRadius:5}} onPress={()=> this.updateProfile()}>
+                        <TouchableOpacity style={{backgroundColor:'#03a9f4',borderRadius:5}} onPress={()=> this.validateForm()}>
                             <Text style={{fontSize:17,color:'#fff',marginVertical:10,marginHorizontal:15}}>Update Profile</Text>
                         </TouchableOpacity>
                     </View>
