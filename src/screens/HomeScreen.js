@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
-    TouchableOpacity,
     Dimensions,
-    Image,
     StatusBar
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Carousel from '../components/Carousel';
+import firebase from 'firebase';
+import user from '../config/User';
+
 const { Width, height } = Dimensions.get('window');
 
 export default class HomeScreen extends Component {
@@ -55,6 +55,12 @@ export default class HomeScreen extends Component {
             }
             ]
         }
+    }
+
+    componentDidMount() {
+        firebase.database().ref('status/'+user.uid).set({
+            status: "Online"
+        });
     }
     
     //   pickLocationHandler = event => {
@@ -103,11 +109,12 @@ export default class HomeScreen extends Component {
                     onPress={this.pickLocationHandler}
                     ref={ref => this.map = ref}
                 >
-                    {this.state.markers.map(marker => (
+                    {this.state.markers.map((marker, index) => (
                         <Marker
-                        coordinate={marker.latlng}
-                        title={marker.title}
-                        description={marker.description}
+                            key={index}
+                            coordinate={marker.latlng}
+                            title={marker.title}
+                            description={marker.description}
                         />
                     ))}
                 </MapView>

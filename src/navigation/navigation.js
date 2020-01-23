@@ -126,19 +126,18 @@ const AppStack = createStackNavigator({
         textAlign: "center",
         flexGrow: 1,
         color: "#fff",
+        fontWeight: 'bold'
       },
+      headerTintColor: '#fff',
       headerStyle: {
         backgroundColor: "#03a9f4",
         borderBottomWidth: 0,
         elevation: 0,
       },
       headerRight: (
-        <TouchableOpacity onPress={navigation.getParam("addNotes")}>
-          <Image
-            style={{ width: 30, height: 30, marginRight: 15 }}
-            source={require("../assets/chat.png")}
-          />
-        </TouchableOpacity>
+        <View>
+          <Text style={{ color: '#03a9f4' }}>Icon</Text>
+        </View>
       ),
     }),
     headerLeft: {
@@ -213,7 +212,7 @@ const AuthStack = createStackNavigator({
     }),
   },
 });
-// console.disableYellowBox = true;
+console.disableYellowBox = true;
 export default createAppContainer(
   createSwitchNavigator(
     {

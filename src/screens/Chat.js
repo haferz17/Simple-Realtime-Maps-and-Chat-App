@@ -16,16 +16,13 @@ export default class Chat extends Component {
 		dbRef.on('child_added',(val)=>{
 			let person = val.val();
 			person.uid = val.key;
-			if(person.uid===firebase.auth().currentUser.uid){
-				User.uid = person.uid;
-			}
-			else {
+			if(person.uid !== firebase.auth().currentUser.uid){
 				this.setState((prevState)=>{
 					return {
-						users: [...prevState.users,person]
+						users: [...prevState.users, person]
 					}
 				})
-			} 
+			}
 		})
 	}
 

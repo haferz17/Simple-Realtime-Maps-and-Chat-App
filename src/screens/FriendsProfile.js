@@ -3,24 +3,20 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity,
     Image,
     ScrollView,
     Dimensions,
     StatusBar,
-    AsyncStorage,
-    Modal
 } from 'react-native';
 const { width, height } = Dimensions.get('window');
 import firebase from 'firebase';
-import User from '../config/User';
-
+import moment from 'moment';
 export default class Profile extends Component {
     constructor(props){
         super(props);
         this.state = {
             fetched: false,
-            users: [],
+            user: [],
             person: {
                 uid: props.navigation.getParam('uid'),
             },
@@ -28,39 +24,54 @@ export default class Profile extends Component {
     }
     
     componentDidMount(){
-        firebase.database().ref('users').child(this.state.person.uid)
-            .on('child_added',(value)=>{
-                this.setState((prevState)=>{
-                    return {
-                        users: [...prevState.users, value.val()]
-                    }
-                })
-            })
+        firebase.database().ref('users')
+        .on('child_added',(value)=>{
+            let data = value.val()
+            data.uid = value.key;
+            if(data.uid == this.state.person.uid) {
+                this.setState({ user: data })
+            }
+        })
     }
     
     render() {
-        console.warn(this.state.users)
+        const { name, email, image, mobile, gender, birth } = this.state.user
         return (
             <View style={{flex:1,backgroundColor:'#eee'}}>
                 <StatusBar backgroundColor="#03a9f4" barStyle="light-content" />
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={{flex:1,backgroundColor:'#03a9f4',justifyContent:'center',alignItems:'center',borderBottomLeftRadius:25,borderBottomRightRadius:25}}>
                         <View style={{flex:3,alignItems:'center'}}>
-                            <Image style={{width:130,height:130,borderRadius:65,marginBottom:15,backgroundColor:'#fff'}} source={{uri:User.avatar}}/>     
-                            <Text style={{color:'#fff',fontSize:25,fontWeight:'bold',marginBottom:15}}>{this.state.users[2]}</Text>
+                            <Image style={{width:130,height:130,borderRadius:65,marginBottom:15,backgroundColor:'#fff'}} source={{ uri: image }}/>     
+                            <Text style={{color:'#fff',fontSize:25,fontWeight:'bold',marginBottom:15}}>{name}</Text>
                         </View>
                     </View>
                     <View style={{flex:1,alignItems:'center'}}>
-                        <View style={{flex:1,width:width*0.9,height:150,backgroundColor:'#f9f9f9',marginTop:20,borderRadius:9,elevation:1,padding:15}}>
+                        <View style={styles.card}>
                             <Text style={{alignSelf:'center',marginBottom:10,color:'#777',fontSize:20}}>Contact</Text>
-                            <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Email : {this.state.users[0]}</Text>
-                            <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Mobile  : {User.mobile}</Text>
+                            <View style={{ flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1 }}>
+                                <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Email</Text></View>
+                                <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {email}</Text></View>
+                            </View>
+                            <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
+                                <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Mobile</Text></View>
+                                <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {mobile}</Text></View>
+                            </View>
                         </View>
-                        <View style={{flex:1,width:width*0.9,height:200,backgroundColor:'#f9f9f9',marginTop:20,borderRadius:9,elevation:1,padding:15}}>
+                        <View style={[styles.card, { marginBottom: 20 }]}>
                             <Text style={{alignSelf:'center',marginBottom:10,color:'#777',fontSize:20}}>Biodata</Text>
-                            <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Nama : {this.state.users[2]}</Text>
-                            <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Gender  : </Text>
-                            <Text style={{color:'#777',width:'100%',borderTopWidth:1,padding:10}}>Birth Date  : </Text>
+                            <View style={{ flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1 }}>
+                                <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Name</Text></View>
+                                <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {name}</Text></View>
+                            </View>
+                            <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
+                                <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Gender</Text></View>
+                                <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {gender ? (gender == "l" ? "Male" : "Female") : null}</Text></View>
+                            </View>
+                            <View style={{ flexDirection: 'row', borderBottomWidth: 1 }}>
+                                <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Birth Date</Text></View>
+                                <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {birth !== '' ? moment(birth).format("DD MMMM YYYY"):''}</Text></View>
+                            </View>
                         </View>
                     </View>
                 </ScrollView>
@@ -69,5 +80,13 @@ export default class Profile extends Component {
     }
 }
 const styles = StyleSheet.create({
-    
-});
+    card: {
+        flex: 1,
+        width: width*0.9,
+        backgroundColor: '#f9f9f9',
+        marginTop: 20,
+        borderRadius: 9,
+        elevation: 3,
+        padding: 15, 
+    }
+}); 

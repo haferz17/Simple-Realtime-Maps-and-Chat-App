@@ -16,6 +16,7 @@ import firebase from 'firebase';
 import User from '../config/User';
 import moment from 'moment';
 import { Toast } from 'native-base';
+import Loading from '../components/loading';
 
 export default class Profile extends Component {
     constructor(props){
@@ -34,6 +35,7 @@ export default class Profile extends Component {
                     let person = val.val();
                     person.uid = val.key;
                     if(person.uid===firebase.auth().currentUser.uid){
+                        User.uid = person.uid;
                         User.name = person.name;
                         User.email = person.email;
                         User.mobile = person.mobile;
@@ -49,6 +51,9 @@ export default class Profile extends Component {
     
     _logOut = async () => {
         await AsyncStorage.clear();
+        firebase.database().ref('status/'+firebase.auth().currentUser.uid).set({
+            status: "Offline"
+        });
 		this.props.navigation.navigate('Auth');
     }
 
@@ -66,6 +71,7 @@ export default class Profile extends Component {
             <View style={{flex:1,backgroundColor:'#eee'}}>
                 <StatusBar backgroundColor="#03a9f4" barStyle="light-content" />
                 <ScrollView showsVerticalScrollIndicator={false}>
+                <Loading isLoading={!this.state.isFetched} text="Fetching Data ..."/>
                 <View style={{flex:1,backgroundColor:'#03a9f4',justifyContent:'center',alignItems:'center',borderBottomLeftRadius:25,borderBottomRightRadius:25}}>
                     <View style={{flex:3,alignItems:'center'}}>
                         <Image style={{width:130,height:130,borderRadius:65,marginBottom:15,backgroundColor:'#fff'}} source={{uri:User.avatar}}/>     
@@ -87,7 +93,7 @@ export default class Profile extends Component {
                     </View>
                 </View>
                 <View style={{flex:1,alignItems:'center'}}>
-                    <View style={{flex:1,width:width*0.9,height:150,backgroundColor:'#f9f9f9',marginTop:20,borderRadius:9,elevation:1,padding:15}}>
+                    <View style={styles.card}>
                         <Text style={{alignSelf:'center',marginBottom:10,color:'#777',fontSize:20}}>Contact</Text>
                         <View style={{ flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1 }}>
                             <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Email</Text></View>
@@ -98,7 +104,7 @@ export default class Profile extends Component {
                             <View style={{ flex: 2 }}><Text style={{color:'#777',padding:10}}>: {User.mobile}</Text></View>
                         </View>
                     </View>
-                    <View style={{flex:1,width:width*0.9,height:200,backgroundColor:'#f9f9f9',marginTop:20,borderRadius:9,elevation:1,padding:15}}>
+                    <View style={styles.card}>
                         <Text style={{alignSelf:'center',marginBottom:10,color:'#777',fontSize:20}}>Biodata</Text>
                         <View style={{ flexDirection: 'row', borderTopWidth: 1, borderBottomWidth: 1 }}>
                             <View style={{ flex: 1 }}><Text style={{color:'#777',padding:10}}>Name</Text></View>
@@ -125,5 +131,13 @@ export default class Profile extends Component {
     }
 }
 const styles = StyleSheet.create({
-    
+    card: {
+        flex: 1,
+        width: width*0.9,
+        backgroundColor: '#f9f9f9',
+        marginTop: 20,
+        borderRadius: 9,
+        elevation: 3,
+        padding: 15, 
+    }
 });

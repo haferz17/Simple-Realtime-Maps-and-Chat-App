@@ -43,8 +43,8 @@ export default class AuthLoading extends Component {
   }
 
   _bootstrapAsync = async () => {
-    User.email = await AsyncStorage.getItem("userEmail");
-    this.props.navigation.navigate(User.email ? "App" : "Auth");
+    User.uid = await AsyncStorage.getItem("userUid");
+    this.props.navigation.navigate(User.uid ? "App" : "Auth");
   };
 
   render() {

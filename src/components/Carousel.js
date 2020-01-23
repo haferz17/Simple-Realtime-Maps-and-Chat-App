@@ -6,12 +6,11 @@ import {
     Dimensions,
     StyleSheet,
     Image,
-    ActivityIndicator
-}
-from 'react-native';
+} from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import firebase from 'firebase';
 import User from '../config/User';
+import Loading from './loading';
 const { width, height } = Dimensions.get('window')
 const widthImg = width * 0.8
 
@@ -29,18 +28,17 @@ export default class FriendsCarousel extends Component {
 		dbRef.on('child_added',(val)=>{
 			let person = val.val();
 			person.uid = val.key;
-			if(person.uid===firebase.auth().currentUser.uid){
-                User.uid = person.uid;
-                User.avatar = person.image;
-			}
-			else {
-				this.setState((prevState)=>{
-					return {
+			if(person.uid == firebase.auth().currentUser.uid){
+                User.uid = person.uid
+            }
+            else {
+                this.setState((prevState) => {
+                    return {
                         users: [...prevState.users,person],
-					}
+                        isLoading: false
+                    }
                 })
-                this.setState({isLoading:false})
-			} 
+            }
 		})
 	}
     renderRow = ({item}) => {
@@ -68,11 +66,13 @@ export default class FriendsCarousel extends Component {
 		)
 	}
     render(){
+        const { users, isLoading } = this.state
         return(
             <View style={{position:'absolute',bottom: 0, height: height*0.22, justifyContent: 'center'}}>
+                <Loading isLoading={isLoading} text="Fetching Data ..."/>
                 <Carousel
                     ref={ ref => this.carouselRef = ref }
-                    data={ this.state.users }
+                    data={ users }
                     renderItem={ this.renderRow }
                     sliderWidth={ width }
                     itemWidth={ widthImg }

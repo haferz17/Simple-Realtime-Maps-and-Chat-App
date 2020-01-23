@@ -3,12 +3,12 @@ import { View, ActivityIndicator, Text, Dimensions, Keyboard } from 'react-nativ
 
 const { width, height } = Dimensions.get('window');
 
-const Loading = ({ isLoading, text }) => {
+const Loading = ({ isLoading, text, backgroundColor }) => {
     return (
         <View>
         {
             isLoading ? (
-            <View style={{ width, height, justifyContent:'center', alignItems: 'center' }}>
+            <View style={{ width, height, justifyContent:'center', alignItems: 'center', backgroundColor }}>
                 <ActivityIndicator size={'large'}/>
                 <Text style={{ marginTop: 10 }}>{text}</Text>
             </View>

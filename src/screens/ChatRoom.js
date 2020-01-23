@@ -20,13 +20,13 @@ export default class ChatRoom extends Component {
     }
     componentDidMount(){
         firebase.database().ref('messages').child(User.uid).child(this.state.person.uid)
-            .on('child_added',(value)=>{
-                this.setState((prevState)=>{
-                    return {
-                        messageList: [...prevState.messageList, value.val()]
-                    }
-                })
+        .on('child_added',(value)=>{
+            this.setState((prevState)=>{
+                return {
+                    messageList: [...prevState.messageList, value.val()]
+                }
             })
+        })
     }
 	handleChange = key => val => {
         this.setState({ [key]: val })
@@ -49,13 +49,6 @@ export default class ChatRoom extends Component {
     }
     renderRow = ({item}) => {
         return(
-            // <View style={{flex:1,flexDirection:'row',width}}>
-
-            // {/* <View>
-            //     {item.from===User.uid?
-            //     <Image/>:<Image style={{width:50,height:50,marginRight:15,borderRadius:30}} source={require('../assets/profile.jpg')}/>
-            //     }  
-            // </View> */}
             <View style={{
                 width:'60%',
                 alignSelf: item.from===User.uid ? 'flex-end':'flex-start',
@@ -69,11 +62,10 @@ export default class ChatRoom extends Component {
                 <Text style={{color: item.from===User.uid ? '#fff':'#333',marginBottom:5}}>{item.message}</Text>
                 <Text style={{color: item.from===User.uid ? '#fff':'#333',alignSelf:'flex-end',fontSize:12}}>{moment(item.time).format("hh:mm A")}</Text>
             </View>
-            // </View>
         )
     }
 	render() {
-        let {height,width} = Dimensions.get('window')
+        let { height, width } = Dimensions.get('window')
 		return (
             <View style={{flex:1,backgroundColor:'#03a9f4'}}>
                 <View style={{flex:1}}>

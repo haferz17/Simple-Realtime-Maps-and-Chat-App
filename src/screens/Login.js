@@ -14,7 +14,6 @@ import {
     Keyboard
 } from 'react-native';
 import { Toast } from 'native-base';
-import Home from './HomeScreen';
 import User from '../config/User';
 import firebaseSDK from '../config/firebaseSDK';
 import firebase from 'firebase';
@@ -63,12 +62,13 @@ export default class Login extends Component {
             email: this.state.email,
             password: this.state.password,
         };
-        AsyncStorage.setItem('userEmail',user.email)
         let dbRef = firebase.database().ref('users');
 		dbRef.on('child_added',(val)=>{
             let person = val.val();
 			person.uid = val.key;
+            AsyncStorage.setItem('userUid', person.uid)
 			if(person.uid===firebase.auth().currentUser.uid){
+                User.uid = person.uid;
                 User.name = person.name;
                 User.email = person.email;
                 User.mobile = person.mobile;

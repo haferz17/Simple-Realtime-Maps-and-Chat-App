@@ -9,7 +9,8 @@ import {
     TouchableOpacity,
     StatusBar,
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    Alert
 } from 'react-native';
 import { Toast } from 'native-base';
 import Loading from '../components/loading';
@@ -22,11 +23,6 @@ export default class Login extends Component {
     constructor(props){
         super(props);
         this.state = {
-            checkedMale:false,
-            checkedFemale:false,
-            disabledMale:false,
-            disabledFemale:false,
-            date:"July 16, 2019",
             isDateTimePickerVisible: false,
             name: '',
             email: '',
@@ -35,9 +31,8 @@ export default class Login extends Component {
             image: 'https://www.iiitdm.ac.in/img/bog/4.jpg',
             isLoading: false,
             isReg: false,
-            avatar: '',
             showPass: false,
-            showConfirmPass: false
+            showConfirmPass: false,
         };
     }
     onPressCreate = async () => {
@@ -134,29 +129,17 @@ export default class Login extends Component {
                         type: 'success'
                     })
                 },
-                function(error) {
-                    this.setState({isLoading: false})
-                    Toast.show({
-                        text: 'Register failed, Try again !',
-                        position: 'top',
-                        type: 'danger'
-                    })
-                }
-            );
+            )
+            .catch((error)=> {
+                Alert.alert(
+                    'Register Failed',
+                    error.message
+                )
+                this.setState({ isLoading: false })
+               
+            })
         }
     };
-    // onPressCreate = async () => {
-	// 	try {
-	// 		const user = {
-	// 			name: this.state.name,
-	// 			email: this.state.email,
-	// 			password: this.state.password,
-	// 		};
-	// 		await firebaseSDK.createAccount(user);
-	// 	} catch ({ message }) {
-	// 		console.log('create account failed. catch error:' + message);
-	// 	}
-	// };
 
     onChangeTextName = name => this.setState({ name });
 	onChangeTextEmail = email => this.setState({ email });
