@@ -10,7 +10,7 @@
   "dependencies": {
     "firebase": "^6.3.0",
     "jetifier": "^1.6.3",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "native-base": "^2.13.4",
     "react": "16.8.6",
     "react-native": "0.60.3",
